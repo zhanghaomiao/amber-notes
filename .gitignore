@@ -1,0 +1,4 @@
+/ion_metal_force_field/*
+!/ion_metal_force_field/build_ion.tex
+!/ion_metal_force_field/*.pdf
+!/ion_metal_force_field/*.png

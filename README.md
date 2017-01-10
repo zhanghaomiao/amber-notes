@@ -75,13 +75,27 @@ $H_{QM}$运用量化的方法进行计算。而较为复杂的$H_{QM/MM}$包含�
 
 如果使用在计算QM-MM相互作用时，使用了QM多极矩，这会使得电势在边界不连续，因此需要使用switching function，关键字为`qmmm_switch`
 
-```    &qmmmqmmask=’:753’,! Residue 753 should be treated using QMqmcharge=-2,! Charge on QM region is -2qm_theory=’PM3’, ! Use the PM3 semi-empirical Hamiltonianqmcut=8.0 ! Use 8 angstrom cut off for QM region 
+```    
+&qmmm
+qmmask=’:753’,! Residue 753 should be treated using QM
+qmcharge=-2,! Charge on QM region is -2
+qm_theory=’PM3’, ! Use the PM3 semi-empirical Hamiltonian
+qmcut=8.0 ! Use 8 angstrom cut off for QM region 
 qmshake = 1   ! Shake QM hydrogen atoms (default = 1 if ntc=2)
 qmcharge=0 ! The integer charge of the QM region (default = 0)
 /
 ```
 
 ## BOND model--MPCB.py
+
+### § Three different models to simulate ion metal
+
+- The bonded model treats the metal ion and its ligating residues with bond, angle, and torsion terms together with point charges and van der Waals (VDW) terms, which is an accurate way to model the ions that form coordination bonds with surrounding residues. The coordination number (CN) remains fixed in the bonded model, and it is not designed to simulate ligand switching and CN changes。
+
+- The nonbonded model treats the metal ion as a point with an integer charge, while the interactions are represented by Columbic and Lennard-Jones (LJ) terms. The coordination of the metal ion is flexible, which allows CN switching and ligand exchange at the metal center. However, this model over- simplifies the interaction between the ions and their surrounding residues. In addition to VDW and Columbic interactions, charge transfer, polarization, and even covalent interactions also exist between a metal ion and its surrounding ligands.Furthermore, a single point poorly represents the charge distribution of most ions. It is usually nonsymmetrically distributed around the metal ion, which could also further change and redistribute in response to changes in the surrounding environment.
+
+- The dummy cationic model is similar to the nonbonded model except it places charges between the metal ions and surrounding ligands to mimic the directionality of valence bonds.
+
 MCPB(Metal Center Parameter Builder) 运用bond和静电模型来生成力场参数。
 >  `MCPB -i input_file -s/--step step_number `
 
@@ -173,7 +187,9 @@ software_version g09
 
 ### PdbSearcher.py
 
-	 Usage: -i/--ion ionname -l/--list input_file    			-e/--env environment_file -s/--sum summary_file  			[-c/--cut cutoff]
+	 Usage: -i/--ion ionname -l/--list input_file  
+  			-e/--env environment_file -s/--sum summary_file  
+			[-c/--cut cutoff]
 1. -i 离子的名称，比如**Zn**
 2. -l 包含pdb文件名称的文件，每一行包含一个pdb文件名称 主义这里的pdb文件是未受处理的原始的pdb文件
 3. -e 生成金属离子相关环境的文件，包括结合原子，距离和几何信息
